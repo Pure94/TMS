@@ -1,0 +1,6 @@
+  databaseChangeLog:
+    - includeAll:
+        # Path to the directory containing the changeset files
+        # This path is relative to the location of THIS master changelog file.
+        path: changes/
+        relativeToChangelogFile: true
