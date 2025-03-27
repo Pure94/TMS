@@ -3,17 +3,18 @@ package pureapps.tms.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import pureapps.tms.project.Project;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"passwordHash"})
+@ToString(exclude = {"passwordHash" , "projects"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,16 +52,15 @@ public class User {
     @Column(name = "hourly_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal hourlyRate;
 
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime updatedAt;
 
     // --- Relationships ---
-    // We will add relationships (e.g., to ProjectAssignment, TimeEntry) later when those entities are defined.
+    @ManyToMany(mappedBy = "assignedEmployees", fetch = FetchType.LAZY)
+    private Set<Project> projects = new HashSet<>();
 
     // Note: While @Column includes nullable=false, using validation annotations (@NotNull, @Email, @Size, @Positive)
     // on Data Transfer Objects (DTOs) is crucial for validating incoming API requests *before* attempting persistence.

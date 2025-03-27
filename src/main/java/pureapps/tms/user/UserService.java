@@ -1,6 +1,5 @@
 package pureapps.tms.user;
 
-
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

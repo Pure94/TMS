@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset ksiepka:1 logicalFilePath:db/changelog/changes/002-insert-initial-admin.sql runOnChange:false runAlways:false failOnError:true
+--changeset ksiepka:3 logicalFilePath:db/changelog/changes/002-insert-initial-admin.sql runOnChange:false runAlways:false failOnError:true
 --comment: Insert initial administrator user required for application setup
 INSERT INTO users
 (login, first_name, last_name, user_type, password_hash, email, hourly_rate, created_at, updated_at)

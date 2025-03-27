@@ -3,7 +3,6 @@ package pureapps.tms.user;
 import org.springframework.stereotype.Component;
 import pureapps.tms.user.dto.UserCreateDTO;
 import pureapps.tms.user.dto.UserDTO;
-import pureapps.tms.user.dto.UserUpdateDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
