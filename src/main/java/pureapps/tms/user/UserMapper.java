@@ -51,29 +51,4 @@ class UserMapper {
         //IMPORTANT :DO NOT set passwordHash here - it's handled in the service
         return user;
     }
-
-    public void updateUserFromDTO(final UserUpdateDTO updateDTO, User user) {
-        if (updateDTO == null || user == null) {
-            return;
-        }
-
-        // Manually check each field in the DTO and update the entity if not null
-        if (updateDTO.getFirstName() != null) {
-            user.setFirstName(updateDTO.getFirstName());
-        }
-        if (updateDTO.getLastName() != null) {
-            user.setLastName(updateDTO.getLastName());
-        }
-        if (updateDTO.getEmail() != null) {
-            user.setEmail(updateDTO.getEmail());
-        }
-        if (updateDTO.getUserType() != null) {
-            user.setUserType(updateDTO.getUserType());
-        }
-        if (updateDTO.getHourlyRate() != null) {
-            user.setHourlyRate(updateDTO.getHourlyRate());
-        }
-        // login, passwordHash, createdAt, id are not updated from this DTO
-        // updatedAt is handled by @UpdateTimestamp
-    }
 }

@@ -79,9 +79,24 @@ class UserService {
                 }
             });
         }
-
-        userMapper.updateUserFromDTO(updateDTO, existingUser);
-        return userMapper.toUserDTO(existingUser);
+        // Manually check each field in the DTO and update the entity if not null
+        if (updateDTO.getFirstName() != null) {
+            existingUser.setFirstName(updateDTO.getFirstName());
+        }
+        if (updateDTO.getLastName() != null) {
+            existingUser.setLastName(updateDTO.getLastName());
+        }
+        if (updateDTO.getEmail() != null) {
+            existingUser.setEmail(updateDTO.getEmail());
+        }
+        if (updateDTO.getUserType() != null) {
+            existingUser.setUserType(updateDTO.getUserType());
+        }
+        if (updateDTO.getHourlyRate() != null) {
+            existingUser.setHourlyRate(updateDTO.getHourlyRate());
+        }
+        // Force flush to execute UPDATE and trigger @UpdateTimestamp/DB default
+        return userMapper.toUserDTO(userRepository.saveAndFlush(existingUser));
     }
 
     @Transactional
