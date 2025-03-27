@@ -8,13 +8,14 @@ import pureapps.tms.user.UserType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    private Long id;
+    private UUID id;
     private String login;
     private String firstName;
     private String lastName;

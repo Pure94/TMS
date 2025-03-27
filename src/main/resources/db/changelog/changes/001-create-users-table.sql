@@ -1,9 +1,9 @@
 --liquibase formatted sql
 
 --changeset ksiepka:1 logicalFilePath:db/changelog/changes/001-create-users-table.sql
---comment: Create the initial users table
+--comment: Create the initial users table with UUID PK
 CREATE TABLE users (
-                       id BIGSERIAL PRIMARY KEY,
+                       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                        login VARCHAR(50) NOT NULL UNIQUE,
                        first_name VARCHAR(100) NOT NULL,
                        last_name VARCHAR(100) NOT NULL,

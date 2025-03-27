@@ -1,6 +1,7 @@
 package pureapps.tms.user;
 
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +19,7 @@ import pureapps.tms.user.dto.UserUpdateDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllUsers(Specification<User> spec, Pageable pageable) {
@@ -35,7 +38,7 @@ class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDTO> findUserById(Long id) {
+    public Optional<UserDTO> findUserById(UUID id) {
         return userRepository.findById(id).map(userMapper::toUserDTO);
     }
 
@@ -56,13 +59,16 @@ class UserService {
 
         User user = userMapper.toUser(createDTO);
         user.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
-        User savedUser = userRepository.save(user);
-        return userMapper.toUserDTO(savedUser);
+        User managedUser = userRepository.save(user);
+        // Force flush to execute INSERT and trigger @CreationTimestamp/DB default
+        entityManager.flush();
+        // Refresh the entity state from the database to get generated values
+        entityManager.refresh(managedUser);
+        return userMapper.toUserDTO(managedUser);
     }
 
     @Transactional
-    public UserDTO updateUser(Long id, UserUpdateDTO updateDTO) {
-        // Find existing user or throw ResourceNotFoundException
+    public UserDTO updateUser(UUID id, UserUpdateDTO updateDTO) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
@@ -79,7 +85,7 @@ class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         userRepository.delete(user);

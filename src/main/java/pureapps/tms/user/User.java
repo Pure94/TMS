@@ -7,7 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime; // Use OffsetDateTime for TIMESTAMP WITH TIME ZONE
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,11 +23,11 @@ import java.time.OffsetDateTime; // Use OffsetDateTime for TIMESTAMP WITH TIME Z
                 @UniqueConstraint(name = "uk_user_login", columnNames = "login"),
                 @UniqueConstraint(name = "uk_user_email", columnNames = "email")
         })
-class User {
+public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, length = 50)
     private String login;
@@ -51,11 +52,11 @@ class User {
     private BigDecimal hourlyRate;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime updatedAt;
 
     // --- Relationships ---
