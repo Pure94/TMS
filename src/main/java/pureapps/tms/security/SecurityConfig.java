@@ -17,6 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final String[] SWAGGER_PATHS = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
+
     /**
      * Defines the PasswordEncoder bean that will be used for hashing passwords.
      * BCrypt is the recommended standard.
@@ -41,6 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Permit all requests to any endpoint FOR NOW.
                         // !!! THIS IS INSECURE FOR PRODUCTION !!!
+                        .requestMatchers(SWAGGER_PATHS).permitAll()
                         // .requestMatchers("/**").permitAll()
                         // Example of a more specific rule (if not using permitAll above):
                         // .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
@@ -50,8 +59,8 @@ public class SecurityConfig {
 
                 )
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session  ->
-                        session .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
         // Add other configurations like session management, form login, logout, JWT filter etc. as needed later.
