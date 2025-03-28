@@ -1,5 +1,7 @@
 # Time Management System
 
+**Development Note:** Approximately 80% of this project's initial codebase was generated with the assistance of AI.
+
 ## Description
 
 A Spring Boot application for tracking time spent by users on different projects. Includes user/project management and budget utilization tracking.
