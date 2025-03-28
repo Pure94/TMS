@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/time-entries")
 @RequiredArgsConstructor
-public class TimeEntryController {
+class TimeEntryController {
 
     private final TimeEntryService timeEntryService;
 
