@@ -23,30 +23,6 @@
     <description>Spring Boot application for time management and tracking</description>
 
     <!-- ================================================================== -->
-    <!-- Project Metadata (To be filled in later)                           -->
-    <!-- ================================================================== -->
-    <url><!-- Project website URL to be added --></url>
-
-    <licenses>
-        <!-- License information to be added -->
-        <license>
-            <!--
-            <name>Example License</name>
-            <url>http://example.com/license</url>
-            <distribution>repo</distribution>
-            -->
-        </license>
-    </licenses>
-
-    <scm>
-        <!-- Source Control Management information to be added -->
-        <connection><!-- scm:git:git://github.com/username/project.git --></connection>
-        <developerConnection><!-- scm:git:ssh://github.com:username/project.git --></developerConnection>
-        <url><!-- https://github.com/username/project/tree/master --></url>
-        <tag><!-- HEAD or specific version tag --></tag>
-    </scm>
-
-    <!-- ================================================================== -->
     <!-- Properties                                                         -->
     <!-- ================================================================== -->
     <properties>

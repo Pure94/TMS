@@ -44,8 +44,6 @@ The application will be available at `http://localhost:8080`.
 * Default **admin** user created on first run:
     * Login: `admin`
     * Password: `adminpassword`
-* **WARNING:** Base security rules need review and tightening for production.
-
 ## Postman
 
 Collections for testing are available in the `/postman` directory.
