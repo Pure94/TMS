@@ -3,6 +3,8 @@ package pureapps.tms.project;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import pureapps.tms.user.User;
 
 import java.math.BigDecimal;
@@ -51,9 +53,11 @@ public class Project {
     @Column(nullable = false, precision = 19, scale = 2) // Match NUMERIC precision/scale
     private BigDecimal budget;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 

@@ -68,11 +68,8 @@ class UserController {
     public Page<UserDTO> getAllUsers(UserFilterDTO filter,
                                      //@PageableDefault(size = 20, sort = "login", direction = Sort.Direction.ASC) // Optional default paging/sorting
                                      Pageable pageable) {
-        // Spring automatically maps query parameters matching field names in UserFilterDTO.
-        // Spring automatically resolves 'page', 'size', 'sort' parameters into a Pageable object.
 
-        Specification<User> spec = userService.buildSpecification(filter);
-        return userService.findAllUsers(spec, pageable);
+        return userService.findAllUsers(filter, pageable);
     }
 
     /**

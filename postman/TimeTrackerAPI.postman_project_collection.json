@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "Time Tracker API",
+    "description": "Collection for testing  the Time Tracker application API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Project Management",
+      "description": "Endpoints for managing projects. Requires MANAGER or ADMIN role.",
+      "item": [
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Apollo Mission\",\n    \"description\": \"Landing people on the moon.\",\n    \"startDate\": \"2025-04-01\",\n    \"endDate\": \"2026-12-31\",\n    \"budget\": 150000.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "description": "Creates a new project. Requires MANAGER or ADMIN role.\nResponse includes the ID of the created project."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Project By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:projectId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                ":projectId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{createdProjectId}}",
+                  "description": "ID of the project to retrieve. Set manually or via collection variable (e.g., after creation)."
+                }
+              ]
+            },
+            "description": "Retrieves a specific project by its UUID. Requires MANAGER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "List/Filter Projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=0&size=10&sort=name,asc&name=Mission&userIds={{adminUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (0-indexed)"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,asc",
+                  "description": "Sort (e.g., budget,desc)"
+                },
+                {
+                  "key": "name",
+                  "value": "Mission",
+                  "description": "(Optional) Filter by name containing text"
+                },
+                {
+                  "key": "dateFrom",
+                  "value": null,
+                  "description": "(Optional) Project active on or after this date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "dateTo",
+                  "value": null,
+                  "description": "(Optional) Project active on or before this date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "userIds",
+                  "value": "{{adminUserId}}",
+                  "description": "(Optional) Comma-separated list of User UUIDs. Shows projects ANY of these users are assigned to. Get UUIDs from user endpoints or DB."
+                },
+                {
+                  "key": "budgetExceeded",
+                  "value": null,
+                  "description": "(Optional) Boolean (true/false). NOTE: Filter logic not implemented yet."
+                }
+              ]
+            },
+            "description": "Retrieves a paginated list of projects, optionally filtered. Requires MANAGER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Updated description: Landing people on the moon and bringing them back safely.\",\n    \"budget\": 175000.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:projectId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                ":projectId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{createdProjectId}}",
+                  "description": "ID of the project to update. Set manually or use variable."
+                }
+              ]
+            },
+            "description": "Updates an existing project. Requires MANAGER or ADMIN role. Only non-null fields in the body are applied."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:projectId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                ":projectId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{createdProjectId}}",
+                  "description": "ID of the project to delete. Set manually or use variable."
+                }
+              ]
+            },
+            "description": "Deletes a project by its UUID. Requires MANAGER or ADMIN role. Also removes associated assignments due to CASCADE."
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Employee To Project",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:projectId/employees/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                ":projectId",
+                "employees",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{createdProjectId}}",
+                  "description": "ID of the project."
+                },
+                {
+                  "key": "userId",
+                  "value": "{{employeeUserId}}",
+                  "description": "ID of the EMPLOYEE/MANAGER user to assign. Get from user endpoints/DB."
+                }
+              ]
+            },
+            "description": "Assigns a user (Employee/Manager) to a project. Requires MANAGER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Unassign Employee From Project",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/:projectId/employees/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                ":projectId",
+                "employees",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": "{{createdProjectId}}",
+                  "description": "ID of the project."
+                },
+                {
+                  "key": "userId",
+                  "value": "{{employeeUserId}}",
+                  "description": "ID of the user to unassign."
+                }
+              ]
+            },
+            "description": "Unassigns a user from a project. Requires MANAGER or ADMIN role."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "{{username}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "adminpassword",
+      "type": "string"
+    },
+    {
+      "key": "createdProjectId",
+      "value": "REPLACE_WITH_PROJECT_UUID",
+      "type": "string"
+    },
+    {
+      "key": "employeeUserId",
+      "value": "REPLACE_WITH_EMPLOYEE_UUID",
+      "type": "string"
+    },
+    {
+      "key": "adminUserId",
+      "value": "REPLACE_WITH_ADMIN_UUID",
+      "type": "string"
+    }
+  ]
+}

@@ -30,24 +30,26 @@ class UserService {
     private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
-    public Page<UserDTO> findAllUsers(Specification<User> spec, Pageable pageable) {
+    public Page<UserDTO> findAllUsers(final UserFilterDTO filterDTO, final Pageable pageable) {
+
+        Specification<User> spec = UserSpecifications.buildSpecification(filterDTO);
         Page<User> userPage = userRepository.findAll(spec, pageable);
         List<UserDTO> dtoList = userMapper.toUserDTOList(userPage.getContent());
         return new PageImpl<>(dtoList, pageable, userPage.getTotalElements());
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDTO> findUserById(UUID id) {
+    public Optional<UserDTO> findUserById(final UUID id) {
         return userRepository.findById(id).map(userMapper::toUserDTO);
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDTO> findByLogin(String login) {
+    public Optional<UserDTO> findByLogin(final String login) {
         return userRepository.findByLogin(login).map(userMapper::toUserDTO);
     }
 
     @Transactional
-    public UserDTO createUser(UserCreateDTO createDTO) {
+    public UserDTO createUser(final UserCreateDTO createDTO) {
 
         userRepository.findByLogin(createDTO.getLogin()).ifPresent(user -> {
             throw new ConflictException("Login already exists: " + createDTO.getLogin());
@@ -67,7 +69,7 @@ class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(UUID id, UserUpdateDTO updateDTO) {
+    public UserDTO updateUser(final UUID id, final UserUpdateDTO updateDTO) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
@@ -99,35 +101,11 @@ class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(final UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         userRepository.delete(user);
     }
 
-    public Specification<User> buildSpecification(UserFilterDTO filter) {
-        Specification<User> spec = Specification.where(null); // Start with a non-null specification
 
-        String login = filter.getLogin();
-        String name = filter.getName(); // Could be first or last name
-        java.math.BigDecimal minRate = filter.getMinRate();
-        java.math.BigDecimal maxRate = filter.getMaxRate();
-        UserType userType = filter.getUserType();
-
-        if (login != null && !login.isBlank()) {
-            spec = spec.and(UserSpecifications.loginContains(login));
-        }
-        if (name != null && !name.isBlank()) {
-            // Combine first and last name search using OR
-            spec = spec.and(UserSpecifications.firstNameContains(name).or(UserSpecifications.lastNameContains(name)));
-        }
-        if (minRate != null || maxRate != null) {
-            spec = spec.and(UserSpecifications.hourlyRateBetween(minRate, maxRate));
-        }
-        if (userType != null) {
-            spec = spec.and(UserSpecifications.hasUserType(userType));
-        }
-
-        return spec;
-    }
 }
