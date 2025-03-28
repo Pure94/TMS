@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "Time Tracker API",
+    "description": "Collection for testing the Time Entry endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Time Entry Management",
+      "description": "Endpoints for logging and managing time entries. Requires authenticated user.",
+      "item": [
+        {
+          "name": "Log Time Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"projectId\": \"{{projectIdForEntry}}\", // <-- SET VALID PROJECT UUID USER IS ASSIGNED TO\n    \"startTime\": \"2025-03-28T09:00:00+01:00\", // Use ISO 8601 format with timezone\n    \"endTime\": \"2025-03-28T11:30:00+01:00\",   // Use ISO 8601 format with timezone\n    \"description\": \"Worked on feature X implementation.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/time-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "time-entries"
+              ]
+            },
+            "description": "Logs a new time entry for the currently authenticated user against a specified project they are assigned to."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Time Entries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/time-entries/me?page=0&size=10&sort=startTime,desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "time-entries",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sort",
+                  "value": "startTime,desc"
+                }
+              ]
+            },
+            "description": "Retrieves a paginated list of the authenticated user's own time entries, sorted by start time descending."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Time Entry By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/time-entries/:timeEntryId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "time-entries",
+                ":timeEntryId"
+              ],
+              "variable": [
+                {
+                  "key": "timeEntryId",
+                  "value": "{{createdTimeEntryId}}",
+                  "description": "UUID of the time entry to retrieve. User must own this entry."
+                }
+              ]
+            },
+            "description": "Retrieves a specific time entry by its UUID. Requires the authenticated user to be the owner of the entry."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Time Entry",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"endTime\": \"2025-03-28T12:00:00+01:00\",\n    \"description\": \"Updated description: Completed feature X.\"\n    // Only include fields you want to update\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/time-entries/:timeEntryId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "time-entries",
+                ":timeEntryId"
+              ],
+              "variable": [
+                {
+                  "key": "timeEntryId",
+                  "value": "{{createdTimeEntryId}}",
+                  "description": "UUID of the time entry to update. User must own this entry."
+                }
+              ]
+            },
+            "description": "Updates an existing time entry. Requires the authenticated user to be the owner. Allows partial updates."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Time Entry",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/time-entries/:timeEntryId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "time-entries",
+                ":timeEntryId"
+              ],
+              "variable": [
+                {
+                  "key": "timeEntryId",
+                  "value": "{{createdTimeEntryId}}",
+                  "description": "UUID of the time entry to delete. User must own this entry."
+                }
+              ]
+            },
+            "description": "Deletes a time entry by its UUID. Requires the authenticated user to be the owner."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "{{username}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "testuser",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password123",
+      "type": "string"
+    },
+    {
+      "key": "projectIdForEntry",
+      "value": "REPLACE_WITH_PROJECT_UUID_USER_IS_ASSIGNED_TO",
+      "type": "string"
+    },
+    {
+      "key": "createdTimeEntryId",
+      "value": "REPLACE_WITH_TIME_ENTRY_UUID",
+      "type": "string"
+    }
+  ]
+}

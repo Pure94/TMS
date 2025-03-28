@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import pureapps.tms.timeentry.TimeEntry;
 import pureapps.tms.user.User;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"assignedEmployees"})
+@ToString(exclude = {"assignedEmployees", "timeEntries"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -70,4 +71,6 @@ public class Project {
     )
     private Set<User> assignedEmployees = new HashSet<>(); // Owning side of the relationship
 
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private Set<TimeEntry> timeEntries = new HashSet<>();
 }

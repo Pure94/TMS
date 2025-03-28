@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import pureapps.tms.project.Project;
+import pureapps.tms.timeentry.TimeEntry;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"passwordHash" , "projects"})
+@ToString(exclude = {"passwordHash" , "projects" , "timeEntries"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -66,6 +67,7 @@ public class User {
     @ManyToMany(mappedBy = "assignedEmployees", fetch = FetchType.LAZY)
     private Set<Project> projects = new HashSet<>();
 
-    // Note: While @Column includes nullable=false, using validation annotations (@NotNull, @Email, @Size, @Positive)
-    // on Data Transfer Objects (DTOs) is crucial for validating incoming API requests *before* attempting persistence.
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<TimeEntry> timeEntries = new HashSet<>();
+
 }

@@ -14,11 +14,15 @@ import pureapps.tms.project.dto.ProjectCreateDTO;
 import pureapps.tms.project.dto.ProjectDTO;
 import pureapps.tms.project.dto.ProjectFilterDTO;
 import pureapps.tms.project.dto.ProjectUpdateDTO;
+import pureapps.tms.timeentry.TimeEntry;
+import pureapps.tms.timeentry.TimeEntryRepository;
 import pureapps.tms.user.User;
 import pureapps.tms.user.UserRepository;
 import pureapps.tms.user.UserType;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +35,7 @@ class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final UserRepository userRepository;
+    private final TimeEntryRepository timeEntryRepository;
 
     @Transactional
     public ProjectDTO assignEmployeeToProject(UUID projectId, UUID userId) { // <-- Change return type to ProjectDTO
@@ -136,12 +141,12 @@ class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ProjectDTO> findProjectById(final UUID id) {
+    public Optional<ProjectDTO> findProjectById(UUID id) {
         return projectRepository.findById(id)
-                .map(projectMapper::toProjectDTO)
-                .map(dto -> {
-                    //TODO: Calculate budget utilization percentage
-                    dto.setBudgetUtilizationPercentage(BigDecimal.ZERO); // Placeholder
+                .map(project -> {
+                    ProjectDTO dto = projectMapper.toProjectDTO(project);
+                    BigDecimal utilization = calculateBudgetUtilizationPercentage(project.getId(), project.getBudget());
+                    dto.setBudgetUtilizationPercentage(utilization);
                     return dto;
                 });
     }
@@ -159,25 +164,40 @@ class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProjectDTO> findAllProjects(final ProjectFilterDTO filter, final Pageable pageable) {
-
+    public Page<ProjectDTO> findAllProjects(ProjectFilterDTO filter, Pageable pageable) {
         Specification<Project> spec = ProjectSpecifications.buildSpecification(filter);
-        Page<Project> projectPage = projectRepository.findAll(spec, pageable);
+        Page<Project> projectPage = projectRepository.findAll(spec, pageable); // Uses @EntityGraph for employees
+
         List<ProjectDTO> dtoList = projectMapper.toProjectDTOList(projectPage.getContent());
 
-        // 4. Set placeholder for budget utilization
-        // (Later, this loop would call a method to calculate the actual percentage)
         dtoList.forEach(dto -> {
-            if (dto.getBudgetUtilizationPercentage() == null) {
-                dto.setBudgetUtilizationPercentage(BigDecimal.ZERO);
-            }
+            BigDecimal utilization = calculateBudgetUtilizationPercentage(dto.getId(), dto.getBudget());
+            dto.setBudgetUtilizationPercentage(utilization);
         });
 
         return new PageImpl<>(dtoList, pageable, projectPage.getTotalElements());
     }
 
-    // TODO: --- Other methods to be added ---
+    private BigDecimal calculateBudgetUtilizationPercentage(final UUID projectId, final BigDecimal budget) {
+        if (budget == null || budget.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        List<TimeEntry> timeEntries = timeEntryRepository.findByProjectId(projectId);
 
-    // private void calculateBudgetUtilization(ProjectDTO dto) { ... } // Needs Time Entries
+        BigDecimal totalCost = BigDecimal.ZERO;
+        for (TimeEntry entry : timeEntries) {
+            if (entry.getStartTime() != null && entry.getEndTime() != null && entry.getUser() != null && entry.getUser().getHourlyRate() != null) {
+                Duration duration = Duration.between(entry.getStartTime(), entry.getEndTime());
 
+                BigDecimal hoursWorked = BigDecimal.valueOf(duration.toMinutes()).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
+                BigDecimal hourlyRate = entry.getUser().getHourlyRate();
+                BigDecimal entryCost = hoursWorked.multiply(hourlyRate);
+                totalCost = totalCost.add(entryCost);
+            }
+        }
+        return totalCost
+                .divide(budget, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
 }
